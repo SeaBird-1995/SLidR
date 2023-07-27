@@ -1,6 +1,7 @@
 import os
 import copy
 import torch
+import random
 import numpy as np
 from PIL import Image
 import MinkowskiEngine as ME
@@ -257,13 +258,29 @@ class NuScenesMatchDataset(Dataset):
         return len(self.list_keyframes)
 
     def __getitem__(self, idx):
-        (
-            pc,
-            images,
-            pairing_points,
-            pairing_images,
-            superpixels,
-        ) = self.map_pointcloud_to_image(self.list_keyframes[idx])
+        while True:
+            flag = True
+            try:
+                (
+                    pc,
+                    images,
+                    pairing_points,
+                    pairing_images,
+                    superpixels,
+                ) = self.map_pointcloud_to_image(self.list_keyframes[idx])
+            except:
+                flag = False
+                idx = random.randrange(self.__len__())
+                (
+                    pc,
+                    images,
+                    pairing_points,
+                    pairing_images,
+                    superpixels,
+                ) = self.map_pointcloud_to_image(self.list_keyframes[idx])
+            if flag:
+                break
+        
         superpixels = torch.tensor(superpixels)
 
         intensity = torch.tensor(pc[:, 3:])

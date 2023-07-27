@@ -31,7 +31,7 @@ class PretrainDataModule(pl.LightningDataModule):
         else:
             self.batch_size = config["batch_size"]
 
-    def setup(self, stage):
+    def setup(self, stage=None):
         cloud_transforms_train = make_transforms_clouds(self.config)
         mixed_transforms_train = make_transforms_asymmetrical(self.config)
         cloud_transforms_val = None
@@ -80,7 +80,7 @@ class PretrainDataModule(pl.LightningDataModule):
             self.train_dataset,
             batch_size=self.batch_size,
             shuffle=True,
-            num_workers=num_workers,
+            num_workers=0,
             collate_fn=default_collate_pair_fn,
             pin_memory=True,
             drop_last=True,
